@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+  <control namespace="Gridnamespace" constructor="TableGrid" version="0.0.62"
+    display-name-key="TableGrid" description-key="TableGrid description" control-type="standard">
+    <!--external-service-usage
+    node declares whether this 3rd party PCF control is using external service or not, if yes, this
+    control will be considered as premium and please also add the external domain it is using.
+    If it is not using any external service, please set the enabled="false" and DO NOT add any domain
+    below. The "enabled" will be false by default.
+    Example1:
+      <external-service-usage enabled="true">
+        <domain>www.Microsoft.com</domain>
+      </external-service-usage>
+    Example2:
+      <external-service-usage enabled="false">
+      </external-service-usage>
+    -->
+    <external-service-usage enabled="false">
+      <!--UNCOMMENT
+      TO ADD EXTERNAL DOMAINS
+      <domain></domain>
+      <domain></domain>
+      -->
+    </external-service-usage>
+    <!-- dataset node represents a set of entity records on CDS; allow more than one datasets -->
+    <data-set name="records"
+      display-name-key="Records_Dataset_Display">
+      <!-- <property-set name="HighlightIndicator"
+        display-name-key="HighlightIndicator_Disp"
+        description-key="HighlightIndicator_Desc"
+        of-type="SingleLine.Text"
+        usage="bound"
+        required="true" /> -->
+    </data-set>
+    <property name="FilteredRecordCount"
+      display-name-key="FilteredRecordCount_Disp"
+      description-key="FilteredRecordCount_Desc"
+      of-type="Whole.None"
+      usage="output" />
+    <property name="SelectionMode"
+      display-name-key="SelectionMode_Disp"
+      description-key="SelectionMode_Desc"
+      of-type="Enum"
+      usage="input"
+      required="false"
+      default-value="1">
+      <value name="None" display-name-key="SelectionMode_None" description-key="No selection allowed">0</value>
+      <value name="Single" display-name-key="SelectionMode_Single" description-key="Single row selection">1</value>
+      <value name="Multiple" display-name-key="SelectionMode_Multiple" description-key="Multiple row selection">2</value>
+    </property>
+    <property name="RecordsPerPage"
+      display-name-key="RecordsPerPage_Disp"
+      description-key="RecordsPerPage_Desc"
+      of-type="Whole.None"
+      usage="input"
+      required="false"
+      default-value="10" />
+    <property name="isTableRefresh"
+      display-name-key="isTableRefresh_Disp"
+      description-key="Refresh table and reset selections when true"
+      of-type="TwoOptions"
+      usage="input"
+      required="false"
+      default-value="false" />
+    <property name="isLink"
+      display-name-key="isLink_Disp"
+      description-key="Enable first column as clickable link"
+      of-type="TwoOptions"
+      usage="input"
+      required="false"
+      default-value="false" />
+    <property name="SelectedRecordId"
+      display-name-key="SelectedRecordId_Disp"
+      description-key="Selected Record ID"
+      of-type="SingleLine.Text"
+      usage="output" />
+    <property name="SelectedRecordIds"
+      display-name-key="SelectedRecordIds_Disp"
+      description-key="Selected Record IDs (comma separated)"
+      of-type="SingleLine.Text"
+      usage="output" />
+    <property name="SelectedLinkRecords"
+      display-name-key="SelectedLinkRecords_Disp"
+      description-key="Records selected via link click (JSON array)"
+      of-type="SingleLine.Text"
+      usage="output" />
+    <resources>
+      <code path="index.ts" order="1" />
+      <!-- UNCOMMENT TO ADD MORE RESOURCES
+      <css path="css/TableGrid.css" order="1" />
+      <resx path="strings/TableGrid.1033.resx" version="1.0.0" />
+      -->
+    </resources>
+    <!-- UNCOMMENT TO ENABLE THE SPECIFIED API
+    <feature-usage>
+      <uses-feature name="Device.captureAudio" required="true" />
+      <uses-feature name="Device.captureImage" required="true" />
+      <uses-feature name="Device.captureVideo" required="true" />
+      <uses-feature name="Device.getBarcodeValue" required="true" />
+      <uses-feature name="Device.getCurrentPosition" required="true" />
+      <uses-feature name="Device.pickFile" required="true" />
+      <uses-feature name="Utility" required="true" />
+      <uses-feature name="WebAPI" required="true" />
+    </feature-usage>
+    -->
+  </control>
+</manifest>
