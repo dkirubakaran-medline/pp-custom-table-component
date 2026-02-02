@@ -21,3 +21,7 @@
 
 # macos
 .DS_Store
+
+# Compiled CSS from SCSS
+TableGrid/CustomTable.css
+

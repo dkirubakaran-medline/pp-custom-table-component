@@ -1,0 +1,541 @@
+// TableGrid SCSS Styles
+// Using Dart Sass with BEM Naming Convention
+// Block__Element--Modifier
+
+// Variables
+$primary-color: #0078d4;
+$primary-hover: #005a9e;
+$secondary-color: #e0e0e0;
+$border-color: #e0e0e0;
+$text-color: #333;
+$text-secondary: #666;
+$link-color: #0078d4;
+$success-color: #107c10;
+$error-color: #d13438;
+
+// Status Colors
+$status-active: #28a745;
+$status-inactive: #6c757d;
+$status-success: #28a745;
+$status-failed: #dc3545;
+$status-error: #dc3545;
+$status-warning: #ffc107;
+$status-info: #17a2b8;
+$status-pending: #17a2b8;
+$status-in-progress: #ffc107;
+$status-completed: #28a745;
+$status-on-hold: #fd7e14;
+$status-cancelled: #6c757d;
+$status-approved: #28a745;
+$status-rejected: #dc3545;
+$status-under-review: #ffc107;
+$status-draft: #6c757d;
+$status-submitted: #17a2b8;
+$status-critical: #721c24;
+$status-high: #dc3545;
+$status-medium: #ffc107;
+$status-low: #28a745;
+$status-urgent: #dc3545;
+$status-paid: #28a745;
+$status-unpaid: #dc3545;
+$status-overdue: #721c24;
+$status-refunded: #17a2b8;
+$status-partial: #fd7e14;
+$status-new: #17a2b8;
+$status-processing: #ffc107;
+$status-shipped: #17a2b8;
+$status-delivered: #28a745;
+$status-returned: #fd7e14;
+$status-trial: #17a2b8;
+$status-expired: #dc3545;
+$status-suspended: #fd7e14;
+$status-enabled: #28a745;
+$status-disabled: #6c757d;
+$status-online: #28a745;
+$status-offline: #6c757d;
+$status-paused: #fd7e14;
+
+// Text Colors
+$text-light: #ffffff;
+$text-dark: #000000;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+
+// Typography
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+
+// Transitions
+$transition-fast: 0.2s ease;
+
+// Mixins
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+// Block: custom-table
+.custom-table {
+  // Element: container
+  &__container {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  // Element: wrapper
+  &__wrapper {
+    min-width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  // Element: header
+  &__header {
+    // No specific styles, acts as namespace
+  }
+
+  // Element: header-row
+  &__header-row {
+    // No specific styles
+  }
+
+  // Element: header-cell
+  &__header-cell {
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: $spacing-sm;
+
+    // Modifier: sorted
+    &--sorted {
+      font-weight: bold;
+    }
+
+    // Modifier: hidden
+    &--hidden {
+      visibility: hidden;
+    }
+  }
+
+  // Element: header-content
+  &__header-content {
+    @include flex-align-center;
+    gap: $spacing-sm;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  // Element: header-text-wrapper
+  &__header-text-wrapper {
+    @include flex-align-center;
+    gap: $spacing-xs;
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  // Element: header-text
+  &__header-text {
+    @include text-ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Element: sort-icon
+  &__sort-icon {
+    font-size: $font-size-md;
+    color: $primary-color;
+    flex-shrink: 0;
+  }
+
+  // Element: filter-button
+  &__filter-button {
+    min-width: auto;
+    padding: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  // Element: resize-handle
+  &__resize-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: col-resize;
+    background-color: transparent;
+    transition: background-color $transition-fast;
+    z-index: 10;
+
+    &:hover {
+      background-color: $secondary-color;
+    }
+
+    // Modifier: active
+    &--active {
+      background-color: $primary-color !important;
+    }
+  }
+
+  // Element: body
+  &__body {
+    // No specific styles
+  }
+
+  // Element: row
+  &__row {
+    // No specific styles, managed by Fluent UI
+  }
+
+  // Element: cell
+  &__cell {
+    text-align: left;
+    overflow: hidden;
+    @include text-ellipsis;
+  }
+
+  // Element: cell-layout
+  &__cell-layout {
+    @include text-ellipsis;
+    display: block;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  // Element: cell-link
+  &__cell-link {
+    color: $link-color;
+    text-decoration: none;
+    cursor: pointer;
+    @include text-ellipsis;
+    display: block;
+
+    &:hover {
+      text-decoration: underline;
+      color: $primary-hover;
+    }
+  }
+
+  // Element: cell-text
+  &__cell-text {
+    @include text-ellipsis;
+    display: block;
+  }
+
+  // Element: status-badge
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-xs;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+
+    // General Status
+    &[data-status="active"],
+    &[data-status="enabled"],
+    &[data-status="online"] {
+      background-color: $status-active;
+      color: $text-light;
+    }
+
+    &[data-status="inactive"],
+    &[data-status="disabled"],
+    &[data-status="offline"],
+    &[data-status="cancelled"],
+    &[data-status="draft"] {
+      background-color: $status-inactive;
+      color: $text-light;
+    }
+
+    // Operation Status
+    &[data-status="success"],
+    &[data-status="completed"],
+    &[data-status="approved"],
+    &[data-status="paid"],
+    &[data-status="delivered"] {
+      background-color: $status-success;
+      color: $text-light;
+    }
+
+    &[data-status="failed"],
+    &[data-status="error"],
+    &[data-status="rejected"],
+    &[data-status="unpaid"],
+    &[data-status="expired"] {
+      background-color: $status-failed;
+      color: $text-light;
+    }
+
+    &[data-status="warning"] {
+      background-color: $status-warning;
+      color: $text-dark;
+    }
+
+    &[data-status="info"] {
+      background-color: $status-info;
+      color: $text-light;
+    }
+
+    // Progress Status
+    &[data-status="not started"] {
+      background-color: $status-inactive;
+      color: $text-light;
+    }
+
+    &[data-status="in progress"],
+    &[data-status="processing"] {
+      background-color: $status-in-progress;
+      color: $text-dark;
+    }
+
+    &[data-status="pending"],
+    &[data-status="pending approval"],
+    &[data-status="submitted"],
+    &[data-status="new"],
+    &[data-status="shipped"],
+    &[data-status="trial"] {
+      background-color: $status-pending;
+      color: $text-light;
+    }
+
+    &[data-status="on hold"],
+    &[data-status="paused"],
+    &[data-status="returned"],
+    &[data-status="suspended"],
+    &[data-status="partial"] {
+      background-color: $status-on-hold;
+      color: $text-light;
+    }
+
+    &[data-status="under review"] {
+      background-color: $status-under-review;
+      color: $text-dark;
+    }
+
+    // Priority Status
+    &[data-status="critical"],
+    &[data-status="overdue"] {
+      background-color: $status-critical;
+      color: $text-light;
+    }
+
+    &[data-status="high"],
+    &[data-status="urgent"] {
+      background-color: $status-high;
+      color: $text-light;
+    }
+
+    &[data-status="medium"] {
+      background-color: $status-medium;
+      color: $text-dark;
+    }
+
+    &[data-status="low"] {
+      background-color: $status-low;
+      color: $text-light;
+    }
+
+    // Payment Status
+    &[data-status="refunded"] {
+      background-color: $status-refunded;
+      color: $text-light;
+    }
+  }
+
+  // Element: status-icon
+  &__status-icon {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  // Element: status-text
+  &__status-text {
+    @include text-ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Element: action-cell
+  &__action-cell {
+    text-align: center;
+  }
+
+  // Element: action-buttons
+  &__action-buttons {
+    @include flex-center;
+    gap: $spacing-xs;
+  }
+
+  // Element: edit-button
+  &__edit-button {
+    color: #0078d4 !important; // Blue color
+    
+    &:hover {
+      background-color: rgba(0, 120, 212, 0.1) !important;
+    }
+  }
+
+  // Element: delete-button
+  &__delete-button {
+    color: #d13438 !important; // Red color
+    
+    &:hover {
+      background-color: rgba(209, 52, 56, 0.1) !important;
+    }
+  }
+
+  // Element: message
+  &__message {
+    padding: $spacing-md;
+    text-align: center;
+    color: $text-secondary;
+  }
+}
+
+// Block: filter-popup
+.filter-popup {
+  // Element: container
+  &__container {
+    padding: $spacing-md;
+    min-width: 250px;
+  }
+
+  // Element: header
+  &__header {
+    @include flex-align-center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+
+  // Element: title
+  &__title {
+    font-weight: 600;
+    font-size: $font-size-md;
+  }
+
+  // Element: close-button
+  &__close-button {
+    min-width: auto;
+  }
+
+  // Element: content
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  // Element: section
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+  }
+
+  // Element: label
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: 600;
+  }
+
+  // Element: sort-buttons
+  &__sort-buttons {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  // Element: sort-button
+  &__sort-button {
+    flex: 1;
+
+    // Modifier: active
+    &--active {
+      background-color: $primary-color;
+      color: white;
+    }
+  }
+
+  // Element: actions
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+    justify-content: flex-end;
+    margin-top: $spacing-xs;
+  }
+
+  &__field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+// Block: pagination
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-md;
+  border-top: 1px solid $border-color;
+
+  // Element: info
+  &__info {
+    font-size: $font-size-md;
+  }
+
+  // Element: buttons
+  &__buttons {
+    display: flex;
+    gap: $spacing-sm;
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .custom-table {
+    &__header-cell {
+      padding: $spacing-xs;
+    }
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: $spacing-md;
+
+    &__info {
+      text-align: center;
+    }
+  }
+
+  .filter-popup {
+    &__container {
+      min-width: 200px;
+    }
+  }
+}

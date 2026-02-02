@@ -1,5 +1,11 @@
 import * as React from "react";
 
+// Import compiled CSS from SCSS
+import "./CustomTable.css";
+
+// Import status utilities
+import { getStatusStyle, isStatusColumn } from "./statusUtils";
+
 import type { JSXElement } from "@fluentui/react-components";
 import {
   PresenceBadgeStatus,
@@ -25,7 +31,7 @@ import {
   Dropdown,
   Option,
 } from "@fluentui/react-components";
-import { FilterRegular, ArrowUpRegular, ArrowDownRegular, DismissRegular } from "@fluentui/react-icons";
+import { FilterRegular, ArrowUpRegular, ArrowDownRegular, DismissRegular, EditRegular, DeleteRegular } from "@fluentui/react-icons";
 import { IObjectWithKey } from "@fluentui/react/lib/components/DetailsList";
 
 type DataSet = ComponentFramework.PropertyHelper.DataSetApi.EntityRecord & IObjectWithKey;
@@ -61,6 +67,10 @@ export interface GridProps {
   isTableRefresh?: boolean;
   isLink?: boolean;
   onLinkClick?: (recordId: string) => void;
+  isEdit?: boolean;
+  onEditClick?: (recordId: string) => void;
+  isDelete?: boolean;
+  onDeleteClick?: (recordId: string) => void;
 }
 
 export const CustomTable = React.memo((props: GridProps) => {
@@ -99,7 +109,17 @@ export const CustomTable = React.memo((props: GridProps) => {
     isTableRefresh,
     isLink,
     onLinkClick,
+    isEdit,
+    onEditClick,
+    isDelete,
+    onDeleteClick,
   } = props;
+
+  // Helper function to capitalize first letter
+  const capitalizeFirstLetter = (text: string): string => {
+    if (!text) return text;
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
 
   // Reset all local state when table refresh is triggered
   React.useEffect(() => {
@@ -393,8 +413,11 @@ export const CustomTable = React.memo((props: GridProps) => {
   );
 
   return (
-    <div style={{ width: width || "100%", height: height || "100%", overflow: "auto" }}>
-      <Table aria-label="Dynamic table" style={{ minWidth: "100%" }}>
+    <div className="custom-table__container">
+      <Table 
+        aria-label="Dynamic table"
+        className="custom-table__wrapper"
+      >
         <TableHeader>
           <TableRow>
             {selectionMode && (
@@ -410,7 +433,7 @@ export const CustomTable = React.memo((props: GridProps) => {
                     : { "aria-label": "Select all rows" }
                 }
                 // Hide the header checkbox/radio for single selection mode
-                style={selectionMode === "single" ? { visibility: "hidden" } : undefined}
+                className={selectionMode === "single" ? "custom-table__header-cell--hidden" : undefined}
               />
             )}
             {columns.map((column) => {
@@ -421,25 +444,23 @@ export const CustomTable = React.memo((props: GridProps) => {
               return (
                 <TableHeaderCell 
                   key={column.name}
+                  className={`custom-table__header-cell ${isSorted ? 'custom-table__header-cell--sorted' : ''}`}
                   style={{ 
-                    userSelect: 'none',
-                    fontWeight: isSorted ? 'bold' : 'normal',
-                    position: 'relative',
                     width: `${columnWidth}px`,
                     minWidth: `${columnWidth}px`,
                     maxWidth: `${columnWidth}px`,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex: 1, overflow: 'hidden' }}>
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {column.displayName}
+                  <div className="custom-table__header-content">
+                    <div className="custom-table__header-text-wrapper">
+                      <span className="custom-table__header-text">
+                        {capitalizeFirstLetter(column.displayName)}
                       </span>
                       {isSorted && (
                         sortDirection === 1 
-                          ? <ArrowUpRegular style={{ fontSize: '14px', color: '#0078d4', flexShrink: 0 }} />
+                          ? <ArrowUpRegular className="custom-table__sort-icon" />
                           : sortDirection === -1 
-                            ? <ArrowDownRegular style={{ fontSize: '14px', color: '#0078d4', flexShrink: 0 }} />
+                            ? <ArrowDownRegular className="custom-table__sort-icon" />
                             : null
                       )}
                     </div>
@@ -466,25 +487,25 @@ export const CustomTable = React.memo((props: GridProps) => {
                           aria-label={`Filter ${column.displayName}`}
                         />
                       </PopoverTrigger>
-                      <PopoverSurface style={{ padding: '16px', minWidth: '320px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <PopoverSurface className="filter-popup__container">
+                        <div className="filter-popup__content">
                           {/* Header with Close Button */}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Label weight="semibold" style={{ fontSize: '16px' }}>{column.displayName}</Label>
+                          <div className="filter-popup__header">
+                            <Label weight="semibold" className="filter-popup__title">{column.displayName}</Label>
                             <Button
                               appearance="subtle"
                               size="small"
                               icon={<DismissRegular />}
                               onClick={() => setOpenFilterColumn(null)}
                               aria-label="Close"
-                              style={{ minWidth: 'auto' }}
+                              className="filter-popup__close-button"
                             />
                           </div>
                           
                           {/* Sort Section */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <div className="filter-popup__section">
                             <Label size="small" weight="semibold">Sort</Label>
-                            <div style={{ display: 'flex', gap: '8px' }}>
+                            <div className="filter-popup__sort-buttons">
                               <Button
                                 appearance="outline"
                                 icon={<ArrowUpRegular />}
@@ -525,18 +546,18 @@ export const CustomTable = React.memo((props: GridProps) => {
                           </div>
                           
                           {/* Divider */}
-                          <div style={{ borderTop: '1px solid #e0e0e0' }}></div>
+                          <div className="filter-popup__divider"></div>
                           
                           {/* Filter Section */}
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          <div className="filter-popup__section">
                             <Label size="small" weight="semibold">Filter</Label>
                             
-                            <div>
-                              <Label size="small">Filter by operator</Label>
+                            <div className="filter-popup__field">
+                              <Label size="small" className="filter-popup__label">Filter by operator</Label>
                               <Dropdown
                                 value={tempFilterOperator}
                                 onOptionSelect={(e, data) => setTempFilterOperator(data.optionValue || "Contains")}
-                                style={{ width: '100%' }}
+                                className="filter-popup__dropdown"
                               >
                                 <Option value="Contains">Contains</Option>
                                 <Option value="Equals">Equals</Option>
@@ -546,17 +567,17 @@ export const CustomTable = React.memo((props: GridProps) => {
                               </Dropdown>
                             </div>
                             
-                            <div>
-                              <Label size="small">Filter by value</Label>
+                            <div className="filter-popup__field">
+                              <Label size="small" className="filter-popup__label">Filter by value</Label>
                               <Input
                                 value={tempFilterValue}
                                 onChange={(e, data) => setTempFilterValue(data.value)}
                                 placeholder="Please enter value"
-                                style={{ width: '100%' }}
+                                className="filter-popup__input"
                               />
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '4px' }}>
+                            <div className="filter-popup__actions">
                               <Button appearance="secondary" onClick={handleClearFilter}>
                                 Clear
                               </Button>
@@ -572,20 +593,10 @@ export const CustomTable = React.memo((props: GridProps) => {
                   
                   {/* Resize Handle */}
                   <div
+                    className={`custom-table__resize-handle ${resizingColumn === column.name ? 'custom-table__resize-handle--active' : ''}`}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       handleResizeStart(column.name, e.clientX);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      width: '8px',
-                      cursor: 'col-resize',
-                      backgroundColor: resizingColumn === column.name ? '#0078d4' : 'transparent',
-                      transition: 'background-color 0.2s',
-                      zIndex: 10,
                     }}
                     onMouseEnter={(e) => {
                       if (!resizingColumn) {
@@ -601,6 +612,20 @@ export const CustomTable = React.memo((props: GridProps) => {
                 </TableHeaderCell>
               );
             })}
+            {/* Action Column Header (Edit/Delete) */}
+            {(isEdit || isDelete) && (
+              <TableHeaderCell
+                className="custom-table__header-cell"
+                style={{
+                  width: '80px',
+                  minWidth: '80px',
+                  maxWidth: '80px',
+                  textAlign: 'center',
+                }}
+              >
+                Action
+              </TableHeaderCell>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -635,32 +660,39 @@ export const CustomTable = React.memo((props: GridProps) => {
                   ? '' 
                   : (record ? record.getFormattedValue(column.name) : '');
                 
+                // Check if this is a status column and get styling
+                const isStatus = isStatusColumn(column.name);
+                const statusStyle = isStatus ? getStatusStyle(cellValue) : null;
+                
                 return (
                   <TableCell 
                     key={`${item.recordId}-${column.name}`}
+                    className="custom-table__cell"
                     style={{
                       width: `${columnWidth}px`,
                       minWidth: `${columnWidth}px`,
                       maxWidth: `${columnWidth}px`,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
                     }}
                   >
-                    <TableCellLayout>
-                      {/* Make first column a link if isLink is true */}
-                      {isFirstColumn && isLink && onLinkClick ? (
+                    <TableCellLayout className="custom-table__cell-layout">
+                      {/* Status cell with badge styling */}
+                      {isStatus && statusStyle ? (
+                        <span 
+                          className="custom-table__status-badge"
+                          data-status={cellValue.toLowerCase()}
+                        >
+                          <span className="custom-table__status-icon">{statusStyle.icon}</span>
+                          <span className="custom-table__status-text">{cellValue}</span>
+                        </span>
+                      ) : isFirstColumn && isLink && onLinkClick ? (
+                        /* Make first column a link if isLink is true */
                         <a
                           href="#"
+                          className="custom-table__cell-link"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             onLinkClick(item.recordId);
-                          }}
-                          style={{
-                            color: '#0078d4',
-                            textDecoration: 'none',
-                            cursor: 'pointer',
                           }}
                           onMouseEnter={(e) => {
                             (e.target as HTMLAnchorElement).style.textDecoration = 'underline';
@@ -672,31 +704,67 @@ export const CustomTable = React.memo((props: GridProps) => {
                           {cellValue}
                         </a>
                       ) : (
-                        cellValue
+                        <span className="custom-table__cell-text">
+                          {cellValue}
+                        </span>
                       )}
                     </TableCellLayout>
                   </TableCell>
                 );
               })}
+              {/* Action Column Cell (Edit/Delete) */}
+              {(isEdit || isDelete) && (
+                <TableCell
+                  className="custom-table__action-cell"
+                  style={{
+                    width: '40px',
+                    minWidth: '40px',
+                    maxWidth: '40px',
+                  }}
+                >
+                  <TableCellLayout>
+                    <div className="custom-table__action-buttons">
+                      {isEdit && onEditClick && (
+                        <Button
+                          appearance="subtle"
+                          className="custom-table__edit-button"
+                          icon={<EditRegular />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEditClick(item.recordId);
+                          }}
+                          aria-label="Edit record"
+                        />
+                      )}
+                      {isDelete && onDeleteClick && (
+                        <Button
+                          appearance="subtle"
+                          className="custom-table__delete-button"
+                          icon={<DeleteRegular />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteClick(item.recordId);
+                          }}
+                          aria-label="Delete record"
+                        />
+                      )}
+                    </div>
+                  </TableCellLayout>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {itemsLoading && <div style={{ padding: "10px", textAlign: "center" }}>Loading...</div>}
-      {tableRows.length === 0 && !itemsLoading && <div style={{ padding: "10px", textAlign: "center" }}>No records found</div>}
+      {itemsLoading && <div className="custom-table__message">Loading...</div>}
+      {tableRows.length === 0 && !itemsLoading && <div className="custom-table__message">No records found</div>}
       
       {/* Server-side Pagination Controls */}
-      <div style={{ 
-        display: "flex", 
-        justifyContent: "space-between", 
-        alignItems: "center", 
-        padding: "10px",
-        borderTop: "1px solid #e0e0e0"
-      }}>
-        <div style={{ fontSize: "14px" }}>
+      <div className="pagination">
+        <div className="pagination__info">
           Page {currentPage} | Total Records: {totalResultCount >= 0 ? totalResultCount : 'Unknown'} | Records Per Page: {recordsPerPage}
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
+        <div className="pagination__buttons">
           <Button 
             appearance="secondary"
             disabled={!hasPreviousPage || itemsLoading}

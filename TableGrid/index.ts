@@ -27,6 +27,8 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
     recordsToJson: { recordId: string; [key: string]: unknown }[] | null = null;
     previousRefreshValue = false;
     selectedLinkRecords: { recordId: string; [key: string]: unknown }[] = [];
+    selectedEditRecords: { recordId: string; [key: string]: unknown }[] = [];
+    selectedDeleteRecords: { recordId: string; [key: string]: unknown }[] = [];
 
     /**
      * Used to initialize the control instance. Controls can kick off remote server calls and other initialization actions here.
@@ -265,6 +267,69 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
     };
 
     /**
+     * Handle edit button click
+     * Always maintains only the most recently clicked record for edit (length = 1)
+     */
+    private onEditClick = (recordId: string): void => {
+        // console.log('=== Edit Clicked ===');
+        // console.log('Edit Record ID:', recordId);
+        
+        if (this.recordsToJson) {
+            // Find record by matching recordId property
+            const editRecord = this.recordsToJson.find(rec => rec.recordId === recordId);
+            
+            if (editRecord) {
+                // Clear existing records and add only the new one (maintain length = 1)
+                this.selectedEditRecords = [editRecord];
+                // console.log('Set selected edit record (cleared previous):', editRecord);
+                // console.log('Total Selected Edit Records:', this.selectedEditRecords.length);
+                // console.log('Selected Edit Records:', JSON.stringify(this.selectedEditRecords, null, 2));
+                
+                // Notify that outputs have changed
+                this.notifyOutputChanged();
+            } else {
+                console.warn(`Record not found for ID: ${recordId}`);
+            }
+        } else {
+            console.warn('recordsToJson is empty');
+        }
+        
+        // console.log('====================');
+    };
+
+    /**
+     * Handle delete button click
+     * Returns the selected record for deletion (parent form handles actual deletion)
+     * Always maintains only the most recently clicked record for delete (length = 1)
+     */
+    private onDeleteClick = (recordId: string): void => {
+        // console.log('=== Delete Clicked ===');
+        // console.log('Delete Record ID:', recordId);
+        
+        if (this.recordsToJson) {
+            // Find record by matching recordId property
+            const deleteRecord = this.recordsToJson.find(rec => rec.recordId === recordId);
+            
+            if (deleteRecord) {
+                // Clear existing records and add only the new one (maintain length = 1)
+                this.selectedDeleteRecords = [deleteRecord];
+                // console.log('Set selected delete record (cleared previous):', deleteRecord);
+                // console.log('Total Selected Delete Records:', this.selectedDeleteRecords.length);
+                // console.log('Selected Delete Records:', JSON.stringify(this.selectedDeleteRecords, null, 2));
+                
+                // Notify that outputs have changed
+                this.notifyOutputChanged();
+            } else {
+                console.warn(`Record not found for ID: ${recordId}`);
+            }
+        } else {
+            console.warn('recordsToJson is empty');
+        }
+        
+        // console.log('====================');
+    };
+
+    /**
      * Calculate total records without using pagination
      * This method retrieves all available record IDs from the dataset
      */
@@ -341,6 +406,8 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
             this.selectedRecordIds = [];
             this.selectedRecordObjects = [];
             this.selectedLinkRecords = [];
+            this.selectedEditRecords = [];
+            this.selectedDeleteRecords = [];
             
             // Reset pagination to first page
             this.currentPage = 1;
@@ -438,6 +505,12 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
             // Get isLink property value
             const isLink = context.parameters.isLink?.raw === true;
             
+            // Get isEdit property value
+            const isEdit = context.parameters.isEdit?.raw === true;
+            
+            // Get isDelete property value
+            const isDelete = context.parameters.isDelete?.raw === true;
+            
             // console.log('=== UpdateView Custom Paging Info ===');
             // console.log('Current Page:', this.currentPage);
             // console.log('Page Size:', this.pageSize);
@@ -476,6 +549,10 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
                     isTableRefresh: isTableRefresh,
                     isLink: isLink,
                     onLinkClick: this.onLinkClick,
+                    isEdit: isEdit,
+                    onEditClick: this.onEditClick,
+                    isDelete: isDelete,
+                    onDeleteClick: this.onDeleteClick,
                 })
             );
         } else {
@@ -498,18 +575,36 @@ export class TableGrid implements ComponentFramework.StandardControl<IInputs, IO
             ? JSON.stringify(this.selectedLinkRecords)
             : "";
         
+        // Return selected edit records as JSON string
+        const selectedEditRecordsJson = this.selectedEditRecords.length > 0
+            ? JSON.stringify(this.selectedEditRecords)
+            : "";
+        
+        // Return selected delete records as JSON string
+        const selectedDeleteRecordsJson = this.selectedDeleteRecords.length > 0
+            ? JSON.stringify(this.selectedDeleteRecords)
+            : "";
+        
         // console.log('=== getOutputs Called ===');
         // console.log('Selected Record Objects:', this.selectedRecordObjects);
         // console.log('Selected Record Count:', this.selectedRecordObjects.length);
         // console.log('Selected Link Records:', this.selectedLinkRecords);
         // console.log('Selected Link Records Count:', this.selectedLinkRecords.length);
+        // console.log('Selected Edit Records:', this.selectedEditRecords);
+        // console.log('Selected Edit Records Count:', this.selectedEditRecords.length);
+        // console.log('Selected Delete Records:', this.selectedDeleteRecords);
+        // console.log('Selected Delete Records Count:', this.selectedDeleteRecords.length);
         // console.log('Output JSON (SelectedRecordIds):', selectedRecordObjectsJson);
         // console.log('Output JSON (SelectedLinkRecords):', selectedLinkRecordsJson);
+        // console.log('Output JSON (SelectedEditRecords):', selectedEditRecordsJson);
+        // console.log('Output JSON (SelectedDeleteRecords):', selectedDeleteRecordsJson);
         // console.log('========================');
         
         return {
             SelectedRecordIds: selectedRecordObjectsJson,
             SelectedLinkRecords: selectedLinkRecordsJson,
+            SelectedEditRecords: selectedEditRecordsJson,
+            SelectedDeleteRecords: selectedDeleteRecordsJson,
         };
     }
 
